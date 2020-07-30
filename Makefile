@@ -18,6 +18,7 @@ libs:
 
 plugins: libs
 	$(MAKE) all -C plugins/moogladder
+	$(MAKE) all -C plugins/mooghalfladder
 
 ifneq ($(CROSS_COMPILING),true)
 gen: plugins dpf/utils/lv2_ttl_generator
@@ -40,19 +41,23 @@ endif
 
 lv2lint:
 	$(MAKE) lv2lint -C plugins/moogladder
+	$(MAKE) lv2lint -C plugins/mooghalfladder
 
 # --------------------------------------------------------------
 
 clean:
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
 	$(MAKE) clean -C plugins/moogladder
+	$(MAKE) clean -C plugins/mooghalfladder
 	rm -rf bin build
 
 install: all
 	$(MAKE) install -C plugins/moogladder
+	$(MAKE) install -C plugins/mooghalfladder
 
 install-user: all
 	$(MAKE) install-user -C plugins/moogladder
+	$(MAKE) install-user -C plugins/mooghalfladder
 
 # --------------------------------------------------------------
 

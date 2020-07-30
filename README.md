@@ -10,6 +10,11 @@ packaged as multi-format plugins via the [DPF].
 A Moog ladder-style 24 dB low pass filter
 
 
+### Moog Half Ladder LPF
+
+A Moog ladder-style 12 dB low pass filter
+
+
 ## Formats
 
 All plugins in this collection come in the following plug-in formats:
