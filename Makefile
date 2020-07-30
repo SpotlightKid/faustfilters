@@ -18,6 +18,7 @@ libs:
 
 plugins: libs
 	$(MAKE) all -C plugins/diodeladder
+	$(MAKE) all -C plugins/korg35lpf
 	$(MAKE) all -C plugins/moogladder
 	$(MAKE) all -C plugins/mooghalfladder
 
@@ -42,6 +43,7 @@ endif
 
 lv2lint:
 	$(MAKE) lv2lint -C plugins/diodeladder
+	$(MAKE) lv2lint -C plugins/korg35lpf
 	$(MAKE) lv2lint -C plugins/moogladder
 	$(MAKE) lv2lint -C plugins/mooghalfladder
 
@@ -50,17 +52,20 @@ lv2lint:
 clean:
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
 	$(MAKE) clean -C plugins/diodeladder
+	$(MAKE) clean -C plugins/korg35lpf
 	$(MAKE) clean -C plugins/moogladder
 	$(MAKE) clean -C plugins/mooghalfladder
 	rm -rf bin build
 
 install: all
 	$(MAKE) install -C plugins/diodeladder
+	$(MAKE) install -C plugins/korg35lpf
 	$(MAKE) install -C plugins/moogladder
 	$(MAKE) install -C plugins/mooghalfladder
 
 install-user: all
 	$(MAKE) install-user -C plugins/diodeladder
+	$(MAKE) install-user -C plugins/korg35lpf
 	$(MAKE) install-user -C plugins/moogladder
 	$(MAKE) install-user -C plugins/mooghalfladder
 
