@@ -5,6 +5,11 @@ packaged as multi-format plugins via the [DPF].
 
 ## Plugins
 
+
+### Diode Ladder
+
+A diode ladder 24 dB lowpass filter
+
 ### Moog Ladder LPF
 
 A Moog ladder-style 24 dB low pass filter
