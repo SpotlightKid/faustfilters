@@ -46,8 +46,8 @@ Make sure you have installed the required build tools and libraries (see
 section "Prerequisites" below) and then clone this repository (including
 sub-modules) and simply run `make` in the project's root directory:
 
-    $ git clone --recursive https://github.com/SpotlightKid/fasutfilters.git
-    $ cd fastfilters
+    $ git clone --recursive https://github.com/SpotlightKid/faustfilters.git
+    $ cd faustfilters
     $ make
 
 
