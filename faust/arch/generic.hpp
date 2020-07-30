@@ -1,50 +1,52 @@
-
+{% block HeaderDescription %}
 //------------------------------------------------------------------------------
 // This file was generated using the Faust compiler (https://faust.grame.fr),
 // and the Faust post-processor (https://github.com/jpcima/faustpp).
 //
-// Source: moogladder.dsp
-// Name: MoogLadder
-// Author: Eric Tarr
-// Copyright: 
-// License: MIT-style STK-4.3 license
-// Version: 
+// Source: {{file_name}}
+// Name: {{name}}
+// Author: {{author}}
+// Copyright: {{copyright}}
+// License: {{license}}
+// Version: {{version}}
 //------------------------------------------------------------------------------
+{% endblock %}
 
-
-
-
-
+{% block HeaderPrologue %}
+{% if not (Identifier is defined and
+           Identifier == cid(Identifier)) %}
+{{fail("`Identifier` is undefined or invalid.")}}
+{% endif %}
+{% endblock %}
 
 #pragma once
-#ifndef MoogLadder_Faust_pp_Gen_HPP_
-#define MoogLadder_Faust_pp_Gen_HPP_
+#ifndef {{Identifier}}_Faust_pp_Gen_HPP_
+#define {{Identifier}}_Faust_pp_Gen_HPP_
 
 #include <memory>
 
-class MoogLadder {
+class {{Identifier}} {
 public:
-    MoogLadder();
-    ~MoogLadder();
+    {{Identifier}}();
+    ~{{Identifier}}();
 
     void init(float sample_rate);
     void clear() noexcept;
 
     void process(
-        const float *in0,
-        float *out0,
+        {% for i in range(inputs) %}const float *in{{i}},{% endfor %}
+        {% for i in range(outputs) %}float *out{{i}},{% endfor %}
         unsigned count) noexcept;
 
-    enum { NumInputs = 1 };
-    enum { NumOutputs = 1 };
-    enum { NumActives = 2 };
-    enum { NumPassives = 0 };
-    enum { NumParameters = 2 };
+    enum { NumInputs = {{inputs}} };
+    enum { NumOutputs = {{outputs}} };
+    enum { NumActives = {{active|length}} };
+    enum { NumPassives = {{passive|length}} };
+    enum { NumParameters = {{active|length + passive|length}} };
 
     enum Parameter {
-        p_cutoff,
-        p_q,
-        
+        {% for w in active + passive %}p_{{cid(w.meta.symbol|default(w.label))}},
+        {% endfor %}
     };
 
     struct ParameterRange {
@@ -66,16 +68,12 @@ public:
     float get_parameter(unsigned index) const noexcept;
     void set_parameter(unsigned index, float value) noexcept;
 
-    
-    float get_cutoff() const noexcept;
-    
-    float get_q() const noexcept;
-    
-    
-    void set_cutoff(float value) noexcept;
-    
-    void set_q(float value) noexcept;
-    
+    {% for w in active + passive %}
+    float get_{{cid(w.meta.symbol|default(w.label))}}() const noexcept;
+    {% endfor %}
+    {% for w in active %}
+    void set_{{cid(w.meta.symbol|default(w.label))}}(float value) noexcept;
+    {% endfor %}
 
 public:
     class BasicDsp;
@@ -83,11 +81,11 @@ public:
 private:
     std::unique_ptr<BasicDsp> fDsp;
 
-
-
+{% block ClassExtraDecls %}
+{% endblock %}
 };
 
+{% block HeaderEpilogue %}
+{% endblock %}
 
-
-
-#endif // MoogLadder_Faust_pp_Gen_HPP_
+#endif // {{Identifier}}_Faust_pp_Gen_HPP_

@@ -28,8 +28,8 @@
 #define DISTRHO_PLUGIN_INFO_H
 
 #define DISTRHO_PLUGIN_BRAND "chrisarndt.de"
-#define DISTRHO_PLUGIN_NAME  "moogladder"
-#define DISTRHO_PLUGIN_URI   "https://chrisarndt.de/plugins/polyfilter#moogladder"
+#define DISTRHO_PLUGIN_NAME  "Moog Ladder LPF"
+#define DISTRHO_PLUGIN_URI   "https://chrisarndt.de/plugins/faustfilters#moogladder"
 
 #define DISTRHO_PLUGIN_HAS_UI        0
 #define DISTRHO_UI_USE_NANOVG        0

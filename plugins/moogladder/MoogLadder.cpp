@@ -4,10 +4,10 @@
 // and the Faust post-processor (https://github.com/jpcima/faustpp).
 //
 // Source: moogladder.dsp
-// Name: moogladder
-// Author: Christopher Arndt
+// Name: MoogLadder
+// Author: Eric Tarr
 // Copyright: 
-// License: 
+// License: MIT-style STK-4.3 license
 // Version: 
 //------------------------------------------------------------------------------
 
@@ -141,15 +141,16 @@ class mydsp : public dsp {
  public:
 	
 	void metadata(Meta* m) { 
-		m->declare("author", "Christopher Arndt");
+		m->declare("author", "Eric Tarr");
 		m->declare("description", "FAUST Moog Ladder 24 dB LPF");
 		m->declare("filename", "moogladder.dsp");
+		m->declare("license", "MIT-style STK-4.3 license");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.1");
-		m->declare("name", "moogladder");
+		m->declare("name", "MoogLadder");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
 		m->declare("signals.lib/version", "0.0");
 		m->declare("vaeffects.lib/moogLadder:author", "Eric Tarr");
@@ -243,9 +244,17 @@ class mydsp : public dsp {
 	}
 	
 	FAUSTPP_VIRTUAL void buildUserInterface(UI* ui_interface) {
-		ui_interface->openVerticalBox("moogladder");
-		ui_interface->addHorizontalSlider("cutoff", &fHslider0, 1.0f, 0.0f, 1.0f, 0.00100000005f);
-		ui_interface->addHorizontalSlider("q", &fHslider1, 1.0f, 0.75f, 25.0f, 0.00999999978f);
+		ui_interface->openVerticalBox("MoogLadder");
+		ui_interface->declare(&fHslider0, "0", "");
+		ui_interface->declare(&fHslider0, "abbrev", "cutoff");
+		ui_interface->declare(&fHslider0, "style", "knob");
+		ui_interface->declare(&fHslider0, "symbol", "cutoff");
+		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 1.0f, 0.0f, 1.0f, 0.00100000005f);
+		ui_interface->declare(&fHslider1, "1", "");
+		ui_interface->declare(&fHslider1, "abbrev", "q");
+		ui_interface->declare(&fHslider1, "style", "knob");
+		ui_interface->declare(&fHslider1, "symbol", "q");
+		ui_interface->addHorizontalSlider("Q", &fHslider1, 1.0f, 0.707000017f, 25.0f, 0.00999999978f);
 		ui_interface->closeBox();
 	}
 	
@@ -346,10 +355,10 @@ const char *MoogLadder::parameter_label(unsigned index) noexcept
     switch (index) {
     
     case 0:
-        return "cutoff";
+        return "Cutoff frequency";
     
     case 1:
-        return "q";
+        return "Q";
     
     default:
         return 0;
@@ -361,10 +370,10 @@ const char *MoogLadder::parameter_short_label(unsigned index) noexcept
     switch (index) {
     
     case 0:
-        return "";
+        return "cutoff";
     
     case 1:
-        return "";
+        return "q";
     
     default:
         return 0;
@@ -411,7 +420,7 @@ const MoogLadder::ParameterRange *MoogLadder::parameter_range(unsigned index) no
     }
     
     case 1: {
-        static const ParameterRange range = { 1, 0.75, 25 };
+        static const ParameterRange range = { 1, 0.70700002, 25 };
         return &range;
     }
     

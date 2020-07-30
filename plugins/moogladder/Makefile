@@ -8,6 +8,8 @@
 # Installation directories
 
 DISTRHO_PLUGIN_URI = $(shell grep DISTRHO_PLUGIN_URI DistrhoPluginInfo.h | cut -d '"' -f 2)
+FAUST_DSP_DIR ?= ../../faust
+FAUST_ARCH_DIR ?= $(FAUST_DSP_DIR)/arch
 
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
@@ -48,11 +50,16 @@ endif
 NAME = moogladder
 
 # --------------------------------------------------------------
+# FAUST DSP source
+FAUST_DSP_SOURCE = $(FAUST_DSP_DIR)/$(NAME).dsp
+FAUST_IDENTIFIER := $(shell grep 'declare name' $(FAUST_DSP_SOURCE) | cut -f 2 -d '"')
+
+# --------------------------------------------------------------
 # Plugin types to build
 
 BUILD_LV2 ?= true
 BUILD_VST2 ?= true
-BUILD_JACK ?= true
+BUILD_JACK ?= false
 BUILD_DSSI ?= false
 BUILD_LADSPA ?= true
 
@@ -60,7 +67,7 @@ BUILD_LADSPA ?= true
 # Files to build
 
 FILES_DSP = \
-	MoogLadder.cpp \
+	$(FAUST_IDENTIFIER).cpp \
 	PluginMoogLadder.cpp
 
 # --------------------------------------------------------------
@@ -103,7 +110,24 @@ ifeq ($(BUILD_LADSPA),true)
 TARGETS += ladspa
 endif
 
+# --------------------------------------------------------------
+# Make targets
+
 all: $(TARGETS)
+
+# --------------------------------------------------------------
+# Generate C++ source & header from FAUST DSP source
+
+$(BUILD_DIR)/$(FAUST_IDENTIFIER).cpp.o: $(FAUST_IDENTIFIER).hpp $(FAUST_IDENTIFIER).cpp
+
+$(FAUST_IDENTIFIER).cpp: $(FAUST_DSP_SOURCE)
+	faustpp -DIdentifier=$(FAUST_IDENTIFIER) -a $(FAUST_ARCH_DIR)/generic.cpp $< > $@
+
+$(FAUST_IDENTIFIER).hpp: $(FAUST_DSP_SOURCE)
+	faustpp -DIdentifier=$(FAUST_IDENTIFIER) -a $(FAUST_ARCH_DIR)/generic.hpp $< > $@
+
+# --------------------------------------------------------------
+# Installation
 
 install: all
 ifeq ($(BUILD_DSSI),true)

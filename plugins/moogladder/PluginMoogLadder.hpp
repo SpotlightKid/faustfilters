@@ -76,7 +76,7 @@ protected:
     }
 
     const char* getHomePage() const override {
-        return "https://chrisarndt.de/plugins/polyfilter#moogladder";
+        return DISTRHO_PLUGIN_URI;
     }
 
     const char* getLicense() const noexcept override {
