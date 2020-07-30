@@ -272,7 +272,8 @@ class mydsp : public dsp {
 		for (int i = 0; (i < count); i = (i + 1)) {
 			fRec5[0] = (fSlow0 + (0.999000013f * fRec5[1]));
 			float fTemp0 = std::tan((fConst0 * std::pow(10.0f, ((3.0f * fRec5[0]) + 1.0f))));
-			float fTemp1 = std::max<float>(-1.0f, std::min<float>(1.0f, (100.0f * float(input0[i]))));
+			//float fTemp1 = std::max<float>(-1.0f, std::min<float>(1.0f, (100.0f * float(input0[i]))));
+			float fTemp1 = input0[i];
 			float fTemp2 = (17.0f - (9.69999981f * mydsp_faustpower10_f(fRec5[0])));
 			float fTemp3 = (fTemp0 + 1.0f);
 			float fTemp4 = ((0.5f * ((fRec1[1] * fTemp0) / fTemp3)) + fRec2[1]);
