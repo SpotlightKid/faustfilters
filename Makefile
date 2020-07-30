@@ -38,6 +38,11 @@ endif
 
 # --------------------------------------------------------------
 
+lv2lint:
+	$(MAKE) lv2lint -C plugins/moogladder
+
+# --------------------------------------------------------------
+
 clean:
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
 	$(MAKE) clean -C plugins/moogladder
@@ -51,4 +56,4 @@ install-user: all
 
 # --------------------------------------------------------------
 
-.PHONY: all clean faust install install-user submodule libs plugins gen
+.PHONY: all clean faust install install-user lv2lint submodule libs plugins gen

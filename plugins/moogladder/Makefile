@@ -7,6 +7,8 @@
 # --------------------------------------------------------------
 # Installation directories
 
+DISTRHO_PLUGIN_URI = $(shell grep DISTRHO_PLUGIN_URI DistrhoPluginInfo.h | cut -d '"' -f 2)
+
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
 LIBDIR ?= $(PREFIX)/lib
@@ -167,4 +169,11 @@ endif
 
 # --------------------------------------------------------------
 
-.PHONY: all install install-user
+lv2lint:
+	@echo "Please make sure you have the https://github.com/KXStudio/LV2-Extensions bundles"
+	@echo "installed somewhere on your LV2_PATH."
+	lv2lint -s lv2_generate_ttl $(DISTRHO_PLUGIN_URI)
+
+# --------------------------------------------------------------
+
+.PHONY: all install install-user lv2lint
