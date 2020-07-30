@@ -35,7 +35,7 @@ A Moog ladder-style 12 dB low pass filter
 
 All plugins in this collection come in the following plug-in formats:
 
-* LADSPA (Linux only)
+* LADSPA
 * LV2
 * VST2
 
