@@ -11,6 +11,11 @@ packaged as multi-format plugins via the [DPF].
 A diode ladder 24 dB lowpass filter
 
 
+### Korg 35 HPF
+
+A Korg 35 24 dB high pass filter as found in the MS-10 and early MS-20s
+
+
 ### Korg 35 LPF
 
 A Korg 35 24 dB low pass filter as found in the MS-10 and early MS-20s
