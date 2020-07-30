@@ -6,6 +6,7 @@
 
 include dpf/Makefile.base.mk
 
+
 all: libs plugins gen
 
 # --------------------------------------------------------------
@@ -50,4 +51,4 @@ install-user: all
 
 # --------------------------------------------------------------
 
-.PHONY: all clean install install-user submodule libs plugins gen
+.PHONY: all clean faust install install-user submodule libs plugins gen

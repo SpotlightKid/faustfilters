@@ -28,7 +28,7 @@
 #define PLUGIN_MOOGLADDER_H
 
 #include "DistrhoPlugin.hpp"
-#include "CParamSmooth.hpp"
+#include "MoogLadder.hpp"
 
 START_NAMESPACE_DISTRHO
 
@@ -44,33 +44,31 @@ START_NAMESPACE_DISTRHO
 #define CLAMP(v, min, max) (MIN((max), MAX((min), (v))))
 #endif
 
-#ifndef DB_CO
-#define DB_CO(g) ((g) > -90.0f ? powf(10.0f, (g) * 0.05f) : 0.0f)
-#endif
 
 // -----------------------------------------------------------------------
 
-class Pluginmoogladder : public Plugin {
+class PluginMoogLadder : public Plugin {
 public:
     enum Parameters {
-        paramGain = 0,
+        paramCutoff = 0,
+        paramQ,
         paramCount
     };
 
-    Pluginmoogladder();
+    PluginMoogLadder();
 
-    ~Pluginmoogladder();
+    ~PluginMoogLadder();
 
 protected:
     // -------------------------------------------------------------------
     // Information
 
     const char* getLabel() const noexcept override {
-        return "moogladder";
+        return "Moog Ladder LPF";
     }
 
     const char* getDescription() const override {
-        return "A Moog Ladder-style low pass filter"";
+        return "A Moog ladder-style 24 dB low pass filter";
     }
 
     const char* getMaker() const noexcept override {
@@ -86,7 +84,7 @@ protected:
     }
 
     uint32_t getVersion() const noexcept override {
-        return d_version(0, 1, 0);
+        return d_version(0, 2, 0);
     }
 
     // Go to:
@@ -95,7 +93,7 @@ protected:
     //
     // Get a proper plugin UID and fill it in here!
     int64_t getUniqueId() const noexcept override {
-        return d_cconst('a', 'b', 'c', 'd');
+        return d_cconst('P', 'f', 'M', 'L');
     }
 
     // -------------------------------------------------------------------
@@ -124,27 +122,25 @@ protected:
 
     void run(const float**, float** outputs, uint32_t frames) override;
 
-
     // -------------------------------------------------------------------
 
 private:
     float           fParams[paramCount];
     double          fSampleRate;
-    float           gain;
-    CParamSmooth    *smooth_gain;
+    MoogLadder*     flt;
 
-    DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Pluginmoogladder)
+    DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginMoogLadder)
 };
 
 struct Preset {
     const char* name;
-    float params[Pluginmoogladder::paramCount];
+    float params[PluginMoogLadder::paramCount];
 };
 
 const Preset factoryPresets[] = {
     {
-        "Unity Gain",
-        {0.0f}
+        "Default",
+        {1.0f, 1.0f}
     }
     //,{
     //    "Another preset",  // preset name

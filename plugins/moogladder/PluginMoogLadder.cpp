@@ -24,16 +24,17 @@
  * IN THE SOFTWARE.
  */
 
-#include "Pluginmoogladder.hpp"
+#include "PluginMoogLadder.hpp"
 
 START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
 
-Pluginmoogladder::Pluginmoogladder()
+PluginMoogLadder::PluginMoogLadder()
     : Plugin(paramCount, presetCount, 0)  // paramCount param(s), presetCount program(s), 0 states
 {
-    smooth_gain = new CParamSmooth(20.0f, getSampleRate());
+    flt = new MoogLadder;
+    fSampleRate = getSampleRate();
 
     for (unsigned p = 0; p < paramCount; ++p) {
         Parameter param;
@@ -42,37 +43,42 @@ Pluginmoogladder::Pluginmoogladder()
     }
 }
 
-Pluginmoogladder::~Pluginmoogladder() {
-    delete smooth_gain;
+PluginMoogLadder::~PluginMoogLadder() {
+    delete flt;
 }
 
 // -----------------------------------------------------------------------
 // Init
 
-void Pluginmoogladder::initParameter(uint32_t index, Parameter& parameter) {
+void PluginMoogLadder::initParameter(uint32_t index, Parameter& parameter) {
     if (index >= paramCount)
         return;
 
-    parameter.ranges.min = -90.0f;
-    parameter.ranges.max = 30.0f;
-    parameter.ranges.def = -0.0f;
-    parameter.unit = "db";
+    const MoogLadder::ParameterRange* range = flt->parameter_range(index);
+    parameter.name = flt->parameter_label(index);
+    parameter.shortName = flt->parameter_short_label(index);
+    parameter.symbol = flt->parameter_symbol(index);
+    parameter.unit = flt->parameter_unit(index);
+    parameter.ranges.min = range->min;
+    parameter.ranges.max = range->max;
+    parameter.ranges.def = range->init;
     parameter.hints = kParameterIsAutomable;
 
-    switch (index) {
-        case paramGain:
-            parameter.name = "Gain (dB)";
-            parameter.shortName = "Gain";
-            parameter.symbol = "gain";
-            break;
-    }
+    if (flt->parameter_is_boolean(index))
+        parameter.hints |= kParameterIsBoolean;
+    if (flt->parameter_is_integer(index))
+        parameter.hints |= kParameterIsInteger;
+    if (flt->parameter_is_logarithmic(index))
+        parameter.hints |= kParameterIsLogarithmic;
+    if (flt->parameter_is_trigger(index))
+        parameter.hints |= kParameterIsTrigger;
 }
 
 /**
   Set the name of the program @a index.
   This function will be called once, shortly after the plugin is created.
 */
-void Pluginmoogladder::initProgramName(uint32_t index, String& programName) {
+void PluginMoogLadder::initProgramName(uint32_t index, String& programName) {
     if (index < presetCount) {
         programName = factoryPresets[index].name;
     }
@@ -84,29 +90,25 @@ void Pluginmoogladder::initProgramName(uint32_t index, String& programName) {
 /**
   Optional callback to inform the plugin about a sample rate change.
 */
-void Pluginmoogladder::sampleRateChanged(double newSampleRate) {
+void PluginMoogLadder::sampleRateChanged(double newSampleRate) {
     fSampleRate = newSampleRate;
-    smooth_gain->setSampleRate(newSampleRate);
+    flt->init(newSampleRate);
 }
 
 /**
   Get the current value of a parameter.
 */
-float Pluginmoogladder::getParameterValue(uint32_t index) const {
+float PluginMoogLadder::getParameterValue(uint32_t index) const {
     return fParams[index];
 }
 
 /**
   Change a parameter value.
 */
-void Pluginmoogladder::setParameterValue(uint32_t index, float value) {
+void PluginMoogLadder::setParameterValue(uint32_t index, float value) {
+    const MoogLadder::ParameterRange* range = flt->parameter_range(index);
     fParams[index] = value;
-
-    switch (index) {
-        case paramGain:
-            gain = DB_CO(CLAMP(fParams[paramGain], -90.0, 30.0));
-            break;
-    }
+    flt->set_parameter(index, CLAMP(value, range->min, range->max));
 }
 
 /**
@@ -114,7 +116,7 @@ void Pluginmoogladder::setParameterValue(uint32_t index, float value) {
   The host may call this function from any context,
   including realtime processing.
 */
-void Pluginmoogladder::loadProgram(uint32_t index) {
+void PluginMoogLadder::loadProgram(uint32_t index) {
     if (index < presetCount) {
         for (int i=0; i < paramCount; i++) {
             setParameterValue(i, factoryPresets[index].params[i]);
@@ -125,35 +127,22 @@ void Pluginmoogladder::loadProgram(uint32_t index) {
 // -----------------------------------------------------------------------
 // Process
 
-void Pluginmoogladder::activate() {
+void PluginMoogLadder::activate() {
     // plugin is activated
+    fSampleRate = getSampleRate();
+    flt->init(fSampleRate);
 }
 
-
-
-void Pluginmoogladder::run(const float** inputs, float** outputs,
+void PluginMoogLadder::run(const float** inputs, float** outputs,
                            uint32_t frames) {
 
-    // get the left and right audio inputs
-    const float* const inpL = inputs[0];
-    const float* const inpR = inputs[1];
-
-    // get the left and right audio outputs
-    float* const outL = outputs[0];
-    float* const outR = outputs[1];
-
-    // apply gain against all samples
-    for (uint32_t i=0; i < frames; ++i) {
-        float gainval = smooth_gain->process(gain);
-        outL[i] = inpL[i] * gainval;
-        outR[i] = inpR[i] * gainval;
-    }
+    flt->process(inputs[0], outputs[0], (unsigned)frames);
 }
 
 // -----------------------------------------------------------------------
 
 Plugin* createPlugin() {
-    return new Pluginmoogladder();
+    return new PluginMoogLadder();
 }
 
 // -----------------------------------------------------------------------

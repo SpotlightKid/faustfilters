@@ -58,7 +58,8 @@ BUILD_LADSPA ?= true
 # Files to build
 
 FILES_DSP = \
-	Pluginmoogladder.cpp
+	MoogLadder.cpp \
+	PluginMoogLadder.cpp
 
 # --------------------------------------------------------------
 # Do some magic
