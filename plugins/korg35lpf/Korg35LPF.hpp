@@ -5,7 +5,7 @@
 //
 // Source: korg35lpf.dsp
 // Name: Korg35LPF
-// Author: Eric Tarr
+// Author: Christopher Arndt
 // Copyright: 
 // License: MIT-style STK-4.3 license
 // Version: 

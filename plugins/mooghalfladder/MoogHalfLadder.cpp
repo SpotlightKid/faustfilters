@@ -134,6 +134,8 @@ class mydsp : public dsp {
  public:
 	
 	void metadata(Meta* m) { 
+		m->declare("../../faust/mooghalfladder.dsp/moogHalfLadder:author", "Eric Tarr");
+		m->declare("../../faust/mooghalfladder.dsp/moogHalfLadder:license", "MIT-style STK-4.3 license");
 		m->declare("author", "Eric Tarr");
 		m->declare("description", "FAUST Moog Half Ladder 12 dB LPF");
 		m->declare("filename", "mooghalfladder.dsp");
@@ -142,14 +144,12 @@ class mydsp : public dsp {
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.1");
+		m->declare("maths.lib/version", "2.3");
 		m->declare("name", "MoogHalfLadder");
+		m->declare("platform.lib/name", "Generic Platform Library");
+		m->declare("platform.lib/version", "0.1");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
 		m->declare("signals.lib/version", "0.0");
-		m->declare("vaeffects.lib/moogHalfLadder:author", "Eric Tarr");
-		m->declare("vaeffects.lib/moogHalfLadder:license", "MIT-style STK-4.3 license");
-		m->declare("vaeffects.lib/name", "Faust Virtual Analog Filter Effect Library");
-		m->declare("vaeffects.lib/version", "0.0");
 	}
 
 	FAUSTPP_VIRTUAL int getNumInputs() {
@@ -192,11 +192,11 @@ class mydsp : public dsp {
 	
 	FAUSTPP_VIRTUAL void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		fConst0 = (6.28318548f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
+		fConst0 = (3.14159274f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
 	}
 	
 	FAUSTPP_VIRTUAL void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(1.0f);
+		fHslider0 = FAUSTFLOAT(20000.0f);
 		fHslider1 = FAUSTFLOAT(1.0f);
 	}
 	
@@ -237,9 +237,11 @@ class mydsp : public dsp {
 		ui_interface->openVerticalBox("MoogHalfLadder");
 		ui_interface->declare(&fHslider0, "0", "");
 		ui_interface->declare(&fHslider0, "abbrev", "cutoff");
+		ui_interface->declare(&fHslider0, "scale", "log");
 		ui_interface->declare(&fHslider0, "style", "knob");
 		ui_interface->declare(&fHslider0, "symbol", "cutoff");
-		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 1.0f, 0.0f, 1.0f, 0.00100000005f);
+		ui_interface->declare(&fHslider0, "unit", "hz");
+		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 20000.0f, 20.0f, 20000.0f, 0.100000001f);
 		ui_interface->declare(&fHslider1, "1", "");
 		ui_interface->declare(&fHslider1, "abbrev", "q");
 		ui_interface->declare(&fHslider1, "style", "knob");
@@ -256,7 +258,7 @@ class mydsp : public dsp {
 		float fSlow2 = (0.082328245f * fSlow1);
 		for (int i = 0; (i < count); i = (i + 1)) {
 			fRec4[0] = (fSlow0 + (0.999000013f * fRec4[1]));
-			float fTemp0 = std::tan((fConst0 * std::pow(10.0f, ((3.0f * fRec4[0]) + 1.0f))));
+			float fTemp0 = std::tan((fConst0 * fRec4[0]));
 			float fTemp1 = (fTemp0 + 1.0f);
 			float fTemp2 = ((2.0f * (fTemp0 / fTemp1)) + -1.0f);
 			float fTemp3 = ((fTemp0 * (((float(input0[i]) + (fSlow1 * (((0.0f - ((0.16465649f * fRec1[1]) + (0.082328245f * (fRec2[1] * fTemp2)))) - (0.082328245f * (((fTemp0 * fTemp2) * fRec3[1]) / fTemp1))) / fTemp1))) / ((fSlow2 * ((mydsp_faustpower2_f(fTemp0) * fTemp2) / mydsp_faustpower2_f(fTemp1))) + 1.0f)) - fRec3[1])) / fTemp1);
@@ -389,7 +391,7 @@ const char *MoogHalfLadder::parameter_unit(unsigned index) noexcept
     switch (index) {
     
     case 0:
-        return "";
+        return "hz";
     
     case 1:
         return "";
@@ -404,7 +406,7 @@ const MoogHalfLadder::ParameterRange *MoogHalfLadder::parameter_range(unsigned i
     switch (index) {
     
     case 0: {
-        static const ParameterRange range = { 1, 0, 1 };
+        static const ParameterRange range = { 20000, 20, 20000 };
         return &range;
     }
     
@@ -448,6 +450,9 @@ bool MoogHalfLadder::parameter_is_integer(unsigned index) noexcept
 bool MoogHalfLadder::parameter_is_logarithmic(unsigned index) noexcept
 {
     switch (index) {
+    
+    case 0:
+        return true;
     
     default:
         return false;

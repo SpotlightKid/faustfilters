@@ -131,6 +131,8 @@ class mydsp : public dsp {
  public:
 	
 	void metadata(Meta* m) { 
+		m->declare("../../faust/korg35hpf.dsp/korg35HPF:author", "Eric Tarr");
+		m->declare("../../faust/korg35hpf.dsp/korg35HPF:license", "MIT-style STK-4.3 license");
 		m->declare("author", "Eric Tarr");
 		m->declare("description", "FAUST Korg 35 24 dB HPF");
 		m->declare("filename", "korg35hpf.dsp");
@@ -139,14 +141,12 @@ class mydsp : public dsp {
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.1");
+		m->declare("maths.lib/version", "2.3");
 		m->declare("name", "Korg35HPF");
+		m->declare("platform.lib/name", "Generic Platform Library");
+		m->declare("platform.lib/version", "0.1");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
 		m->declare("signals.lib/version", "0.0");
-		m->declare("vaeffects.lib/korg35HPF:author", "Eric Tarr");
-		m->declare("vaeffects.lib/korg35HPF:license", "MIT-style STK-4.3 license");
-		m->declare("vaeffects.lib/name", "Faust Virtual Analog Filter Effect Library");
-		m->declare("vaeffects.lib/version", "0.0");
 	}
 
 	FAUSTPP_VIRTUAL int getNumInputs() {
@@ -189,11 +189,11 @@ class mydsp : public dsp {
 	
 	FAUSTPP_VIRTUAL void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		fConst0 = (6.28318548f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
+		fConst0 = (3.14159274f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
 	}
 	
 	FAUSTPP_VIRTUAL void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(0.0f);
+		fHslider0 = FAUSTFLOAT(20000.0f);
 		fHslider1 = FAUSTFLOAT(1.0f);
 	}
 	
@@ -234,9 +234,11 @@ class mydsp : public dsp {
 		ui_interface->openVerticalBox("Korg35HPF");
 		ui_interface->declare(&fHslider0, "0", "");
 		ui_interface->declare(&fHslider0, "abbrev", "cutoff");
+		ui_interface->declare(&fHslider0, "scale", "log");
 		ui_interface->declare(&fHslider0, "style", "knob");
 		ui_interface->declare(&fHslider0, "symbol", "cutoff");
-		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 0.0f, 0.0f, 1.0f, 0.00100000005f);
+		ui_interface->declare(&fHslider0, "unit", "hz");
+		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 20000.0f, 20.0f, 20000.0f, 0.100000001f);
 		ui_interface->declare(&fHslider1, "1", "");
 		ui_interface->declare(&fHslider1, "abbrev", "q");
 		ui_interface->declare(&fHslider1, "style", "knob");
@@ -253,7 +255,7 @@ class mydsp : public dsp {
 		for (int i = 0; (i < count); i = (i + 1)) {
 			float fTemp0 = float(input0[i]);
 			fRec4[0] = (fSlow0 + (0.999000013f * fRec4[1]));
-			float fTemp1 = std::tan((fConst0 * std::pow(10.0f, ((3.0f * fRec4[0]) + 1.0f))));
+			float fTemp1 = std::tan((fConst0 * fRec4[0]));
 			float fTemp2 = ((fTemp0 - fRec3[1]) * fTemp1);
 			float fTemp3 = (fTemp1 + 1.0f);
 			float fTemp4 = (fTemp1 / fTemp3);
@@ -386,7 +388,7 @@ const char *Korg35HPF::parameter_unit(unsigned index) noexcept
     switch (index) {
     
     case 0:
-        return "";
+        return "hz";
     
     case 1:
         return "";
@@ -401,7 +403,7 @@ const Korg35HPF::ParameterRange *Korg35HPF::parameter_range(unsigned index) noex
     switch (index) {
     
     case 0: {
-        static const ParameterRange range = { 0, 0, 1 };
+        static const ParameterRange range = { 20000, 20, 20000 };
         return &range;
     }
     
@@ -445,6 +447,9 @@ bool Korg35HPF::parameter_is_integer(unsigned index) noexcept
 bool Korg35HPF::parameter_is_logarithmic(unsigned index) noexcept
 {
     switch (index) {
+    
+    case 0:
+        return true;
     
     default:
         return false;

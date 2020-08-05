@@ -5,7 +5,7 @@
 //
 // Source: moogladder.dsp
 // Name: MoogLadder
-// Author: Eric Tarr
+// Author: Christopher Arndt
 // Copyright: 
 // License: MIT-style STK-4.3 license
 // Version: 
@@ -141,7 +141,9 @@ class mydsp : public dsp {
  public:
 	
 	void metadata(Meta* m) { 
-		m->declare("author", "Eric Tarr");
+		m->declare("../../faust/moogladder.dsp/moogLadder:author", "Eric Tarr");
+		m->declare("../../faust/moogladder.dsp/moogLadder:license", "MIT-style STK-4.3 license");
+		m->declare("author", "Christopher Arndt");
 		m->declare("description", "FAUST Moog Ladder 24 dB LPF");
 		m->declare("filename", "moogladder.dsp");
 		m->declare("license", "MIT-style STK-4.3 license");
@@ -149,14 +151,12 @@ class mydsp : public dsp {
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.1");
+		m->declare("maths.lib/version", "2.3");
 		m->declare("name", "MoogLadder");
+		m->declare("platform.lib/name", "Generic Platform Library");
+		m->declare("platform.lib/version", "0.1");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
 		m->declare("signals.lib/version", "0.0");
-		m->declare("vaeffects.lib/moogLadder:author", "Eric Tarr");
-		m->declare("vaeffects.lib/moogLadder:license", "MIT-style STK-4.3 license");
-		m->declare("vaeffects.lib/name", "Faust Virtual Analog Filter Effect Library");
-		m->declare("vaeffects.lib/version", "0.0");
 	}
 
 	FAUSTPP_VIRTUAL int getNumInputs() {
@@ -199,11 +199,11 @@ class mydsp : public dsp {
 	
 	FAUSTPP_VIRTUAL void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		fConst0 = (6.28318548f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
+		fConst0 = (3.14159274f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
 	}
 	
 	FAUSTPP_VIRTUAL void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(1.0f);
+		fHslider0 = FAUSTFLOAT(20000.0f);
 		fHslider1 = FAUSTFLOAT(1.0f);
 	}
 	
@@ -247,14 +247,16 @@ class mydsp : public dsp {
 		ui_interface->openVerticalBox("MoogLadder");
 		ui_interface->declare(&fHslider0, "0", "");
 		ui_interface->declare(&fHslider0, "abbrev", "cutoff");
+		ui_interface->declare(&fHslider0, "scale", "log");
 		ui_interface->declare(&fHslider0, "style", "knob");
 		ui_interface->declare(&fHslider0, "symbol", "cutoff");
-		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 1.0f, 0.0f, 1.0f, 0.00100000005f);
+		ui_interface->declare(&fHslider0, "unit", "hz");
+		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 20000.0f, 20.0f, 20000.0f, 0.100000001f);
 		ui_interface->declare(&fHslider1, "1", "");
 		ui_interface->declare(&fHslider1, "abbrev", "q");
 		ui_interface->declare(&fHslider1, "style", "knob");
 		ui_interface->declare(&fHslider1, "symbol", "q");
-		ui_interface->addHorizontalSlider("Q", &fHslider1, 1.0f, 0.707000017f, 25.0f, 0.00999999978f);
+		ui_interface->addHorizontalSlider("Q", &fHslider1, 1.0f, 0.707199991f, 25.0f, 0.00999999978f);
 		ui_interface->closeBox();
 	}
 	
@@ -265,8 +267,8 @@ class mydsp : public dsp {
 		float fSlow1 = (0.0411641225f * (float(fHslider1) + -0.707000017f));
 		for (int i = 0; (i < count); i = (i + 1)) {
 			fRec5[0] = (fSlow0 + (0.999000013f * fRec5[1]));
-			float fTemp0 = std::tan((fConst0 * std::pow(10.0f, ((3.0f * fRec5[0]) + 1.0f))));
-			float fTemp1 = (3.9000001f - (0.899999976f * std::pow(fRec5[0], 0.200000003f)));
+			float fTemp0 = std::tan((fConst0 * fRec5[0]));
+			float fTemp1 = (3.9000001f - (0.899999976f * std::pow((0.0f - (0.333333343f * (1.0f - (std::log10(fRec5[0]) + -0.30103001f)))), 0.200000003f)));
 			float fTemp2 = (fTemp0 + 1.0f);
 			float fTemp3 = ((fTemp0 * (((float(input0[i]) - (fSlow1 * (fTemp1 * (((fRec1[1] + (fRec2[1] * fTemp0)) + (mydsp_faustpower2_f(fTemp0) * fRec3[1])) + (mydsp_faustpower3_f(fTemp0) * fRec4[1]))))) / ((fSlow1 * (fTemp1 * mydsp_faustpower4_f(fTemp0))) + 1.0f)) - fRec4[1])) / fTemp2);
 			float fTemp4 = ((fTemp0 * ((fRec4[1] + fTemp3) - fRec3[1])) / fTemp2);
@@ -400,7 +402,7 @@ const char *MoogLadder::parameter_unit(unsigned index) noexcept
     switch (index) {
     
     case 0:
-        return "";
+        return "hz";
     
     case 1:
         return "";
@@ -415,12 +417,12 @@ const MoogLadder::ParameterRange *MoogLadder::parameter_range(unsigned index) no
     switch (index) {
     
     case 0: {
-        static const ParameterRange range = { 1, 0, 1 };
+        static const ParameterRange range = { 20000, 20, 20000 };
         return &range;
     }
     
     case 1: {
-        static const ParameterRange range = { 1, 0.70700002, 25 };
+        static const ParameterRange range = { 1, 0.70719999, 25 };
         return &range;
     }
     
@@ -459,6 +461,9 @@ bool MoogLadder::parameter_is_integer(unsigned index) noexcept
 bool MoogLadder::parameter_is_logarithmic(unsigned index) noexcept
 {
     switch (index) {
+    
+    case 0:
+        return true;
     
     default:
         return false;

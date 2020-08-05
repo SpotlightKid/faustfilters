@@ -15,12 +15,15 @@ import("stdfaust.lib");
 // These filters were implemented in Faust by Eric Tarr during the
 // [2019 Embedded DSP With Faust Workshop](https://ccrma.stanford.edu/workshops/faust-embedded-19/).
 //
+// Modified by Christopher Arndt to change the cutoff frequency param
+// to be given in Hertz instead of normalized 0.0 - 1.0.
+//
 // #### Filter history:
 //
 // <https://secretlifeofsynthesizers.com/the-korg-35-filter/>
 //========================================================================================
 
-//------------------`(ve.)korg35HPF`-----------------
+//------------------`korg35HPF`-----------------
 // Virtual analog models of the Korg 35 high-pass filter found in the MS-10 and
 // MS-20 synthesizers.
 //
@@ -32,11 +35,33 @@ import("stdfaust.lib");
 //
 // Where:
 //
-// * `normFreq`: normalized frequency (0-1)
-// * `Q`: q
+// * `freq`: cutoff frequency (20-20000 Hz)
+// * `Q`: q (0.5 - 10.0)
 //---------------------------------------------------------------------
+declare korg35HPF author "Eric Tarr";
+declare korg35HPF license "MIT-style STK-4.3 license";
+korg35HPF(freq,Q) = _ <: (s1,s2,s3,y) : !,!,!,_
+letrec{
+    's1 = _-s1:_*(alpha*2):_+s1;
+    's2 = _<:(_-s1:_*alpha:_+s1)*-1,_:>_+(s3*B3):_+(s2*B2):_*alpha0:_*K:_-s2:_*alpha*2:_+s2;
+    's3 = _<:(_-s1:_*alpha:_+s1)*-1,_:>_+(s3*B3):_+(s2*B2):_*alpha0:_*K:_<:(_-s2:_*alpha:_+s2)*-1,_:>_-s3:_*alpha*2:_+s3;
+    'y = _<:(_-s1:_*alpha:_+s1)*-1,_:>_+(s3*B3):_+(s2*B2):_*alpha0;
+}
+with{
+    // freq = 2*(10^(3*normFreq+1));
+    K = 2.0*(Q - 0.707)/(10.0 - 0.707);
+    wd = 2*ma.PI*freq;
+    T = 1/ma.SR;
+    wa = (2/T)*tan(wd*T/2);
+    g = wa*T/2;
+    G = g/(1.0 + g);
+    alpha = G;
+    B3 = 1.0/(1.0 + g);
+    B2 = -1.0*G/(1.0 + g);
+    alpha0 = 1/(1 - K*G + K*G*G);
+};
 
 q = hslider("[1]Q[symbol: q][abbrev: q][style:knob]", 1.0, 0.5, 10.0, 0.01);
-cutoff = hslider("[0]Cutoff frequency[symbol: cutoff][abbrev: cutoff][style:knob]", 0.0, 0.0, 1.0, 0.001):si.smoo;
+cutoff = hslider("[0]Cutoff frequency[symbol: cutoff][abbrev: cutoff][unit: hz][scale: log][style: knob]", 20000.0, 20.0, 20000, 0.1):si.smoo;
 
-process = _ : ve.korg35HPF(cutoff, q) <:_;
+process = _ : korg35HPF(cutoff, q) <:_;

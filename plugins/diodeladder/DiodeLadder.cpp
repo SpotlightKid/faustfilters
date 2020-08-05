@@ -5,10 +5,10 @@
 //
 // Source: diodeladder.dsp
 // Name: DiodeLadder
-// Author: Eric Tarr
-// Copyright:
+// Author: Christopher Arndt
+// Copyright: 
 // License: MIT-style STK-4.3 license
-// Version:
+// Version: 
 //------------------------------------------------------------------------------
 
 
@@ -97,7 +97,7 @@ FAUSTPP_BEGIN_NAMESPACE
 
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
-#endif
+#endif 
 
 FAUSTPP_END_NAMESPACE
 #include <algorithm>
@@ -118,19 +118,19 @@ static float mydsp_faustpower4_f(float value) {
 	return (((value * value) * value) * value);
 }
 
-#ifndef FAUSTCLASS
+#ifndef FAUSTCLASS 
 #define FAUSTCLASS mydsp
 #endif
 
-#ifdef __APPLE__
+#ifdef __APPLE__ 
 #define exp10f __exp10f
 #define exp10 __exp10
 #endif
 
 class mydsp : public dsp {
-
+	
  FAUSTPP_PRIVATE:
-
+	
 	int fSampleRate;
 	float fConst0;
 	FAUSTFLOAT fHslider0;
@@ -140,11 +140,13 @@ class mydsp : public dsp {
 	float fRec2[2];
 	float fRec3[2];
 	float fRec4[2];
-
+	
  public:
-
-	void metadata(Meta* m) {
-		m->declare("author", "Eric Tarr");
+	
+	void metadata(Meta* m) { 
+		m->declare("../../faust/diodeladder.dsp/diodeLadder:author", "Eric Tarr");
+		m->declare("../../faust/diodeladder.dsp/diodeLadder:license", "MIT-style STK-4.3 license");
+		m->declare("author", "Christopher Arndt");
 		m->declare("description", "FAUST Diode Ladder 24 dB LPF");
 		m->declare("filename", "diodeladder.dsp");
 		m->declare("license", "MIT-style STK-4.3 license");
@@ -152,16 +154,14 @@ class mydsp : public dsp {
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
-		m->declare("maths.lib/version", "2.1");
-		m->declare("misceffects.lib/name", "Faust Math Library");
+		m->declare("maths.lib/version", "2.3");
+		m->declare("misceffects.lib/name", "Misc Effects Library");
 		m->declare("misceffects.lib/version", "2.0");
 		m->declare("name", "DiodeLadder");
+		m->declare("platform.lib/name", "Generic Platform Library");
+		m->declare("platform.lib/version", "0.1");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
 		m->declare("signals.lib/version", "0.0");
-		m->declare("vaeffects.lib/diodeLadder:author", "Eric Tarr");
-		m->declare("vaeffects.lib/diodeLadder:license", "MIT-style STK-4.3 license");
-		m->declare("vaeffects.lib/name", "Faust Virtual Analog Filter Effect Library");
-		m->declare("vaeffects.lib/version", "0.0");
 	}
 
 	FAUSTPP_VIRTUAL int getNumInputs() {
@@ -198,20 +198,20 @@ class mydsp : public dsp {
 		}
 		return rate;
 	}
-
+	
 	static void classInit(int sample_rate) {
 	}
-
+	
 	FAUSTPP_VIRTUAL void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		fConst0 = (6.28318548f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
+		fConst0 = (3.14159274f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
 	}
-
+	
 	FAUSTPP_VIRTUAL void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(1.0f);
+		fHslider0 = FAUSTFLOAT(20000.0f);
 		fHslider1 = FAUSTFLOAT(1.0f);
 	}
-
+	
 	FAUSTPP_VIRTUAL void instanceClear() {
 		for (int l0 = 0; (l0 < 2); l0 = (l0 + 1)) {
 			fRec5[l0] = 0.0f;
@@ -229,7 +229,7 @@ class mydsp : public dsp {
 			fRec4[l4] = 0.0f;
 		}
 	}
-
+	
 	FAUSTPP_VIRTUAL void init(int sample_rate) {
 		classInit(sample_rate);
 		instanceInit(sample_rate);
@@ -239,30 +239,32 @@ class mydsp : public dsp {
 		instanceResetUserInterface();
 		instanceClear();
 	}
-
+	
 	FAUSTPP_VIRTUAL mydsp* clone() {
 		return new mydsp();
 	}
-
+	
 	FAUSTPP_VIRTUAL int getSampleRate() {
 		return fSampleRate;
 	}
-
+	
 	FAUSTPP_VIRTUAL void buildUserInterface(UI* ui_interface) {
 		ui_interface->openVerticalBox("DiodeLadder");
 		ui_interface->declare(&fHslider0, "0", "");
 		ui_interface->declare(&fHslider0, "abbrev", "cutoff");
+		ui_interface->declare(&fHslider0, "scale", "log");
 		ui_interface->declare(&fHslider0, "style", "knob");
 		ui_interface->declare(&fHslider0, "symbol", "cutoff");
-		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 1.0f, 0.0f, 1.0f, 0.00100000005f);
+		ui_interface->declare(&fHslider0, "unit", "hz");
+		ui_interface->addHorizontalSlider("Cutoff frequency", &fHslider0, 20000.0f, 20.0f, 20000.0f, 0.100000001f);
 		ui_interface->declare(&fHslider1, "1", "");
 		ui_interface->declare(&fHslider1, "abbrev", "q");
 		ui_interface->declare(&fHslider1, "style", "knob");
 		ui_interface->declare(&fHslider1, "symbol", "q");
-		ui_interface->addHorizontalSlider("Q", &fHslider1, 1.0f, 0.707000017f, 25.0f, 0.00999999978f);
+		ui_interface->addHorizontalSlider("Q", &fHslider1, 1.0f, 0.707199991f, 25.0f, 0.00999999978f);
 		ui_interface->closeBox();
 	}
-
+	
 	FAUSTPP_VIRTUAL void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) {
 		FAUSTFLOAT* input0 = inputs[0];
 		FAUSTFLOAT* output0 = outputs[0];
@@ -271,10 +273,9 @@ class mydsp : public dsp {
 		float fSlow2 = (0.00514551532f * fSlow1);
 		for (int i = 0; (i < count); i = (i + 1)) {
 			fRec5[0] = (fSlow0 + (0.999000013f * fRec5[1]));
-			float fTemp0 = std::tan((fConst0 * std::pow(10.0f, ((3.0f * fRec5[0]) + 1.0f))));
-			//float fTemp1 = std::max<float>(-1.0f, std::min<float>(1.0f, (100.0f * float(input0[i]))));
-			float fTemp1 = input0[i];
-			float fTemp2 = (17.0f - (9.69999981f * mydsp_faustpower10_f(fRec5[0])));
+			float fTemp0 = std::tan((fConst0 * fRec5[0]));
+			float fTemp1 = std::max<float>(-1.0f, std::min<float>(1.0f, (100.0f * float(input0[i]))));
+			float fTemp2 = (17.0f - (9.69999981f * mydsp_faustpower10_f((0.0f - (0.333333343f * (1.0f - (std::log10(fRec5[0]) + -0.30103001f)))))));
 			float fTemp3 = (fTemp0 + 1.0f);
 			float fTemp4 = ((0.5f * ((fRec1[1] * fTemp0) / fTemp3)) + fRec2[1]);
 			float fTemp5 = ((fTemp0 * (1.0f - (0.25f * (fTemp0 / fTemp3)))) + 1.0f);
@@ -288,7 +289,7 @@ class mydsp : public dsp {
 			float fTemp13 = ((fTemp0 * (1.0f - (0.5f * (fTemp0 / fTemp9)))) + 1.0f);
 			float fTemp14 = mydsp_faustpower2_f(fTemp0);
 			float fTemp15 = (fTemp3 * fTemp5);
-			float fTemp16 = ((fTemp0 * ((((((1.5f * (fTemp1 * (1.0f - (0.333333343f * mydsp_faustpower2_f(fTemp1))))) + (fSlow1 * ((fTemp2 * (((0.0f - ((0.0411641225f * fRec1[1]) + (0.0205820613f * fTemp6))) - (0.0205820613f * fTemp10)) - (0.00514551532f * ((mydsp_faustpower3_f(fTemp0) * fTemp11) / (fTemp12 * fTemp13))))) / fTemp3))) * ((0.5f * (fTemp14 / (fTemp9 * fTemp13))) + 1.0f)) / ((fSlow2 * ((mydsp_faustpower4_f(fTemp0) * fTemp2) / ((fTemp15 * fTemp9) * fTemp13))) + 1.0f)) + ((fTemp8 + (0.5f * ((fTemp0 * fTemp11) / fTemp13))) / fTemp9)) - fRec4[1])) / fTemp3);
+			float fTemp16 = ((fTemp0 * ((((((1.5f * (fTemp1 * (1.0f - (0.333333343f * mydsp_faustpower2_f(fTemp1))))) + (fSlow1 * ((fTemp2 * (((0.0f - ((0.0205820613f * fTemp6) + (0.0411641225f * fRec1[1]))) - (0.0205820613f * fTemp10)) - (0.00514551532f * ((mydsp_faustpower3_f(fTemp0) * fTemp11) / (fTemp12 * fTemp13))))) / fTemp3))) * ((0.5f * (fTemp14 / (fTemp9 * fTemp13))) + 1.0f)) / ((fSlow2 * ((mydsp_faustpower4_f(fTemp0) * fTemp2) / ((fTemp15 * fTemp9) * fTemp13))) + 1.0f)) + ((fTemp8 + (0.5f * ((fTemp0 * fTemp11) / fTemp13))) / fTemp9)) - fRec4[1])) / fTemp3);
 			float fTemp17 = ((fTemp0 * ((0.5f * (((fRec4[1] + fTemp16) * ((0.25f * (fTemp14 / fTemp12)) + 1.0f)) + ((fTemp4 + (0.5f * fTemp10)) / fTemp5))) - fRec3[1])) / fTemp3);
 			float fTemp18 = ((fTemp0 * ((0.5f * (((fRec3[1] + fTemp17) * ((0.25f * (fTemp14 / fTemp15)) + 1.0f)) + ((fRec1[1] + fTemp7) / fTemp3))) - fRec2[1])) / fTemp3);
 			float fTemp19 = ((fTemp0 * ((0.5f * (fRec2[1] + fTemp18)) - fRec1[1])) / fTemp3);
@@ -373,13 +374,13 @@ void DiodeLadder::process(
 const char *DiodeLadder::parameter_label(unsigned index) noexcept
 {
     switch (index) {
-
+    
     case 0:
         return "Cutoff frequency";
-
+    
     case 1:
         return "Q";
-
+    
     default:
         return 0;
     }
@@ -388,13 +389,13 @@ const char *DiodeLadder::parameter_label(unsigned index) noexcept
 const char *DiodeLadder::parameter_short_label(unsigned index) noexcept
 {
     switch (index) {
-
+    
     case 0:
         return "cutoff";
-
+    
     case 1:
         return "q";
-
+    
     default:
         return 0;
     }
@@ -403,13 +404,13 @@ const char *DiodeLadder::parameter_short_label(unsigned index) noexcept
 const char *DiodeLadder::parameter_symbol(unsigned index) noexcept
 {
     switch (index) {
-
+    
     case 0:
         return "cutoff";
-
+    
     case 1:
         return "q";
-
+    
     default:
         return 0;
     }
@@ -418,13 +419,13 @@ const char *DiodeLadder::parameter_symbol(unsigned index) noexcept
 const char *DiodeLadder::parameter_unit(unsigned index) noexcept
 {
     switch (index) {
-
+    
     case 0:
-        return "";
-
+        return "hz";
+    
     case 1:
         return "";
-
+    
     default:
         return 0;
     }
@@ -433,17 +434,17 @@ const char *DiodeLadder::parameter_unit(unsigned index) noexcept
 const DiodeLadder::ParameterRange *DiodeLadder::parameter_range(unsigned index) noexcept
 {
     switch (index) {
-
+    
     case 0: {
-        static const ParameterRange range = { 1, 0, 1 };
+        static const ParameterRange range = { 20000, 20, 20000 };
         return &range;
     }
-
+    
     case 1: {
-        static const ParameterRange range = { 1, 0.70700002, 25 };
+        static const ParameterRange range = { 1, 0.70719999, 25 };
         return &range;
     }
-
+    
     default:
         return 0;
     }
@@ -452,7 +453,7 @@ const DiodeLadder::ParameterRange *DiodeLadder::parameter_range(unsigned index) 
 bool DiodeLadder::parameter_is_trigger(unsigned index) noexcept
 {
     switch (index) {
-
+    
     default:
         return false;
     }
@@ -461,7 +462,7 @@ bool DiodeLadder::parameter_is_trigger(unsigned index) noexcept
 bool DiodeLadder::parameter_is_boolean(unsigned index) noexcept
 {
     switch (index) {
-
+    
     default:
         return false;
     }
@@ -470,7 +471,7 @@ bool DiodeLadder::parameter_is_boolean(unsigned index) noexcept
 bool DiodeLadder::parameter_is_integer(unsigned index) noexcept
 {
     switch (index) {
-
+    
     default:
         return false;
     }
@@ -479,7 +480,10 @@ bool DiodeLadder::parameter_is_integer(unsigned index) noexcept
 bool DiodeLadder::parameter_is_logarithmic(unsigned index) noexcept
 {
     switch (index) {
-
+    
+    case 0:
+        return true;
+    
     default:
         return false;
     }
@@ -489,13 +493,13 @@ float DiodeLadder::get_parameter(unsigned index) const noexcept
 {
     mydsp &dsp = static_cast<mydsp &>(*fDsp);
     switch (index) {
-
+    
     case 0:
         return dsp.fHslider0;
-
+    
     case 1:
         return dsp.fHslider1;
-
+    
     default:
         (void)dsp;
         return 0;
@@ -506,15 +510,15 @@ void DiodeLadder::set_parameter(unsigned index, float value) noexcept
 {
     mydsp &dsp = static_cast<mydsp &>(*fDsp);
     switch (index) {
-
+    
     case 0:
         dsp.fHslider0 = value;
         break;
-
+    
     case 1:
         dsp.fHslider1 = value;
         break;
-
+    
     default:
         (void)dsp;
         (void)value;

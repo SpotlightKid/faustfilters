@@ -5,7 +5,7 @@
 //
 // Source: moogladder.dsp
 // Name: MoogLadder
-// Author: Eric Tarr
+// Author: Christopher Arndt
 // Copyright: 
 // License: MIT-style STK-4.3 license
 // Version: 
