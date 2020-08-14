@@ -133,9 +133,7 @@ void PluginMoogLadder::activate() {
     flt->init(fSampleRate);
 }
 
-void PluginMoogLadder::run(const float** inputs, float** outputs,
-                           uint32_t frames) {
-
+void PluginMoogLadder::run(const float** inputs, float** outputs, uint32_t frames) {
     flt->process(inputs[0], outputs[0], (unsigned)frames);
 }
 

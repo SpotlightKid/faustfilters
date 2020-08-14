@@ -133,9 +133,7 @@ void PluginKorg35HPF::activate() {
     flt->init(fSampleRate);
 }
 
-void PluginKorg35HPF::run(const float** inputs, float** outputs,
-                           uint32_t frames) {
-
+void PluginKorg35HPF::run(const float** inputs, float** outputs, uint32_t frames) {
     flt->process(inputs[0], outputs[0], (unsigned)frames);
 }
 

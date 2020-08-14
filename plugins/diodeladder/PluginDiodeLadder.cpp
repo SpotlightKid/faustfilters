@@ -133,9 +133,7 @@ void PluginDiodeLadder::activate() {
     flt->init(fSampleRate);
 }
 
-void PluginDiodeLadder::run(const float** inputs, float** outputs,
-                           uint32_t frames) {
-
+void PluginDiodeLadder::run(const float** inputs, float** outputs, uint32_t frames) {
     flt->process(inputs[0], outputs[0], (unsigned)frames);
 }
 

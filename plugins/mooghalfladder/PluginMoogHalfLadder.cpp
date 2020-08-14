@@ -133,9 +133,7 @@ void PluginMoogHalfLadder::activate() {
     flt->init(fSampleRate);
 }
 
-void PluginMoogHalfLadder::run(const float** inputs, float** outputs,
-                           uint32_t frames) {
-
+void PluginMoogHalfLadder::run(const float** inputs, float** outputs, uint32_t frames) {
     flt->process(inputs[0], outputs[0], (unsigned)frames);
 }
 
