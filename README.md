@@ -3,7 +3,14 @@
 A collection of virtual-analog filters from the [FAUST] standard library
 packaged as multi-format plugins via the [DPF].
 
+
 ## Plugins
+
+All plugins are mono, i.e. they have one audio input and output, unless noted
+otherwise. They all have two (automatable) parameters:
+
+* Cutoff / center frequency in Hertz (`20.0 - 20,000.0`)
+* Q factor (range varies)
 
 
 ### Diode Ladder
@@ -29,6 +36,18 @@ A Moog ladder-style 24 dB low pass filter
 ### Moog Half Ladder LPF
 
 A Moog ladder-style 12 dB low pass filter
+
+
+### Oberheim Multi-mode Filter
+
+A multi-mode, state-variable filter as found in Oberheim synthesizers
+
+This filter has four outputs:
+
+* Bandstop
+* Bandpass
+* Highpass
+* Lowpass
 
 
 ## Formats
