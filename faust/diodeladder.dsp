@@ -141,4 +141,4 @@ with{
 q = hslider("[1]Q[symbol: q][abbrev: q][style:knob]", 1.0, 0.7072, 25.0, 0.01);
 cutoff = hslider("[0]Cutoff frequency[symbol: cutoff][abbrev: cutoff][unit: hz][scale: log][style: knob]", 20000.0, 20.0, 20000, 0.1):si.smoo;
 
-process = _ : diodeLadder(cutoff, q) <:_;
+process = _ : diodeLadder(cutoff, q) : _;
