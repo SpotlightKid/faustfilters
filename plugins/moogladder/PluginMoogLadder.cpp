@@ -25,7 +25,6 @@
  */
 
 #include "PluginMoogLadder.hpp"
-#include <iostream>
 
 START_NAMESPACE_DISTRHO
 
@@ -34,10 +33,8 @@ START_NAMESPACE_DISTRHO
 PluginMoogLadder::PluginMoogLadder()
     : Plugin(paramCount, presetCount, 0)  // paramCount param(s), presetCount program(s), 0 states
 {
-    std::cerr << "PluginMoogLadder()" << std::endl;
     flt = new MoogLadder;
     fSampleRate = getSampleRate();
-    std::cerr << "sampleRate: " << fSampleRate << std::endl;
 
     for (unsigned p = 0; p < paramCount; ++p) {
         Parameter param;
@@ -94,9 +91,7 @@ void PluginMoogLadder::initProgramName(uint32_t index, String& programName) {
   Optional callback to inform the plugin about a sample rate change.
 */
 void PluginMoogLadder::sampleRateChanged(double newSampleRate) {
-    std::cerr << "sampleRateChanged()" << std::endl;
     fSampleRate = newSampleRate;
-    std::cerr << "sampleRate: " << fSampleRate << std::endl;
     flt->init(newSampleRate);
 }
 
@@ -133,10 +128,8 @@ void PluginMoogLadder::loadProgram(uint32_t index) {
 // Process
 
 void PluginMoogLadder::activate() {
-    std::cerr << "activate()" << std::endl;
     // plugin is activated
     fSampleRate = getSampleRate();
-    std::cerr << "sampleRate: " << fSampleRate << std::endl;
     flt->init(fSampleRate);
 }
 
