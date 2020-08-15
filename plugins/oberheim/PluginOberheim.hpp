@@ -97,7 +97,7 @@ protected:
     }
 
     uint32_t getVersion() const noexcept override {
-        return d_version(0, 3, 0);
+        return d_version(0, 1, 0);
     }
 
     // Go to:
@@ -139,8 +139,8 @@ protected:
     // -------------------------------------------------------------------
 
 private:
-    float           fParams[paramCount];
-    double          fSampleRate;
+    float         fParams[paramCount];
+    double        fSampleRate;
     Oberheim*     flt;
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginOberheim)

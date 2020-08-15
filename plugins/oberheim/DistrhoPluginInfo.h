@@ -42,6 +42,8 @@
 #define DISTRHO_PLUGIN_WANT_MIDI_INPUT  0
 #define DISTRHO_PLUGIN_WANT_MIDI_OUTPUT 0
 
-#define DISTRHO_PLUGIN_LV2_CATEGORY "lv2:FilterPlugin"
+// Most hosts will only recognize the first (alphabetically) category :(
+//#define DISTRHO_PLUGIN_LV2_CATEGORY "lv2:BandpassPlugin, lv2:BandstopPlugin, lv2:HighpassPlugin, lv2:LowpassPlugin"
+#define DISTRHO_PLUGIN_LV2_CATEGORY "lv2:LowpassPlugin"
 
 #endif // DISTRHO_PLUGIN_INFO_H
